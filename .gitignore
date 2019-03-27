@@ -101,4 +101,3 @@ cmake-build-debug/HelloSFML
 cmake-build-debug/HelloSFML.cbp
 cmake-build-debug/Makefile
 cmake-build-debug/cmake_install.cmake
-src/pieces/
