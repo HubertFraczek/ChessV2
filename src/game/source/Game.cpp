@@ -10,9 +10,9 @@ using namespace sf;
 void Game::run() {
     RenderWindow window(VideoMode(WIDTH, HEIGHT), "Chess");
     window.setFramerateLimit(FPS);
-    Event event;
 
     while (window.isOpen()) {
+        Event event;
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed) {
                 window.close();
