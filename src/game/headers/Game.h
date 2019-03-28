@@ -14,6 +14,7 @@ private:
     int const WIDTH = 800;
     int const HEIGHT = 800;
     int const FPS = 30;
+    int const SPRITE_SIZE = 100;
 public:
     void run();
 

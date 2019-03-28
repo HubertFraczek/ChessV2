@@ -4,13 +4,10 @@
 
 #include "../headers/Piece.h"
 
-Piece::Piece(sf::Sprite *sprite, int id) {
-    this->sprite = sprite;
-    this->id = id;
-}
+Piece::Piece() {}
 
-sf::Sprite *Piece::getSprite() const {
-    return sprite;
+sf::Sprite Piece::getSprite() {
+    return *this->sprite;
 }
 
 void Piece::setSprite(sf::Sprite *sprite) {

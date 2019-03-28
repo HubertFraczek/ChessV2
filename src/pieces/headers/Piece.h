@@ -12,11 +12,11 @@ protected:
     sf::Sprite *sprite;
     int id;
 public:
-    Piece(sf::Sprite *sprite, int id);
-    sf::Sprite *getSprite() const;
-    void setSprite(sf::Sprite *sprite);
-    int getId() const;
-    void setId(int id);
+    Piece();
+    virtual sf::Sprite getSprite();
+    virtual void setSprite(sf::Sprite *sprite);
+    virtual int getId() const;
+    virtual void setId(int id);
 };
 
 
