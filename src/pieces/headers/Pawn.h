@@ -9,7 +9,8 @@
 #include "Piece.h"
 
 class Pawn : public Piece {
-
+public:
+    Pawn(sf::Sprite *sprite, int id, int x, int y);
 };
 
 

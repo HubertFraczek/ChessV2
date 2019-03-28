@@ -3,7 +3,17 @@
 //
 
 #include "../headers/Game.h"
+#include "../../pieces/headers/Piece.h"
+#include "../../pieces/headers/Rook.h"
+#include "../../pieces/headers/Bishop.h"
+#include "../../pieces/headers/Knight.h"
+#include "../../pieces/headers/Queen.h"
+#include "../../pieces/headers/King.h"
+#include "../../pieces/headers/Pawn.h"
+#include "../../pieces/headers/FreeSpace.h"
+#include "../headers/Board.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 using namespace sf;
 
@@ -15,58 +25,28 @@ void Game::run() {
     tBoard.loadFromFile("../assets/board/board.png");
     Sprite sBoard(tBoard);
 
-    Texture tWhitePawn;
-    tWhitePawn.loadFromFile("../assets/pieces/wP.png");
-    Sprite sWhitePawn(tWhitePawn);
-
-    Texture tBlackPawn;
-    tBlackPawn.loadFromFile("../assets/pieces/bP.png");
-    Sprite sBlackPawn(tBlackPawn);
-
-    Texture tWhiteRook;
-    tWhiteRook.loadFromFile("../assets/pieces/wR.png");
-    Sprite sWhiteRook(tWhiteRook);
-
-    Texture tBlackRook;
-    tBlackRook.loadFromFile("../assets/pieces/bR.png");
-    Sprite sBlackRook(tBlackRook);
-
-    Texture tWhiteKnight;
-    tWhiteKnight.loadFromFile("../assets/pieces/wN.png");
-    Sprite sWhiteKnight(tWhiteKnight);
-
-    Texture tBlackKnight;
-    tBlackKnight.loadFromFile("../assets/pieces/bN.png");
-    Sprite sBlackKnight(tBlackKnight);
-
-    Texture tWhiteQueen;
-    tWhiteQueen.loadFromFile("../assets/pieces/wQ.png");
-    Sprite sWhiteQueen(tWhiteQueen);
-
-    Texture tBlackQueen;
-    tBlackQueen.loadFromFile("../assets/pieces/bQ.png");
-    Sprite sBlackQueen(tBlackQueen);
-
-    Texture tWhiteKing;
-    tWhiteKing.loadFromFile("../assets/pieces/wK.png");
-    Sprite sWhiteKing(tWhiteKing);
-
-    Texture tBlackKing;
-    tBlackKing.loadFromFile("../assets/pieces/bK.png");
-    Sprite sBlackKing(tBlackKing);
-
+    Board *board = new Board(SPRITE_SIZE);
+    board->getElement(0,0)->getSprite();
 
     while (window.isOpen()) {
         Event event;
+        Vector2i mousePos = Mouse::getPosition(window);
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed) {
                 window.close();
             }
+            board->mouseEvents(&event, mouseButtonReleased, mousePos);
         }
+        board->update(mousePos, mouseButtonReleased);
 
         window.clear();
         window.draw(sBoard);
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                if (board->getElement(x, y)->getId() != 0)
+                    window.draw(board->getElement(x, y)->getSprite());
+            }
+        }
         window.display();
     }
-
 }

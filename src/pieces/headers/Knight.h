@@ -8,8 +8,9 @@
 
 #include "Piece.h"
 
-class Knight : public Piece{
-
+class Knight : public Piece {
+public:
+    Knight(sf::Sprite *sprite, int id, int x, int y);
 };
 
 

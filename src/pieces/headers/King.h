@@ -9,7 +9,8 @@
 #include "Piece.h"
 
 class King : public Piece {
-
+public:
+    King(sf::Sprite *sprite, int id, int x, int y);
 };
 
 
