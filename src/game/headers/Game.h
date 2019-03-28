@@ -6,6 +6,9 @@
 #define CHESSV2_GAME_H
 
 
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+
 class Game {
 private:
     int const WIDTH = 800;
