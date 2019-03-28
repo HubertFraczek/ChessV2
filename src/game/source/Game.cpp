@@ -12,6 +12,7 @@
 #include "../../pieces/headers/Pawn.h"
 #include "../../pieces/headers/FreeSpace.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 using namespace sf;
 
@@ -25,27 +26,21 @@ void Game::run() {
 
     Texture tWhitePawn;
     tWhitePawn.loadFromFile("../assets/pieces/wP.png");
-    Sprite sWhitePawn(tWhitePawn);
 
     Texture tBlackPawn;
     tBlackPawn.loadFromFile("../assets/pieces/bP.png");
-    Sprite sBlackPawn(tBlackPawn);
 
     Texture tWhiteRook;
     tWhiteRook.loadFromFile("../assets/pieces/wR.png");
-    Sprite sWhiteRook(tWhiteRook);
 
     Texture tBlackRook;
     tBlackRook.loadFromFile("../assets/pieces/bR.png");
-    Sprite sBlackRook(tBlackRook);
 
     Texture tWhiteKnight;
     tWhiteKnight.loadFromFile("../assets/pieces/wN.png");
-    Sprite sWhiteKnight(tWhiteKnight);
 
     Texture tBlackKnight;
     tBlackKnight.loadFromFile("../assets/pieces/bN.png");
-    Sprite sBlackKnight(tBlackKnight);
 
     Texture tWhiteBishop;
     tWhiteBishop.loadFromFile("../assets/pieces/wB.png");
@@ -55,19 +50,15 @@ void Game::run() {
 
     Texture tWhiteQueen;
     tWhiteQueen.loadFromFile("../assets/pieces/wQ.png");
-    Sprite sWhiteQueen(tWhiteQueen);
 
     Texture tBlackQueen;
     tBlackQueen.loadFromFile("../assets/pieces/bQ.png");
-    Sprite sBlackQueen(tBlackQueen);
 
     Texture tWhiteKing;
     tWhiteKing.loadFromFile("../assets/pieces/wK.png");
-    Sprite sWhiteKing(tWhiteKing);
 
     Texture tBlackKing;
     tBlackKing.loadFromFile("../assets/pieces/bK.png");
-    Sprite sBlackKing(tBlackKing);
 
     Piece* board[8][8] = {
         new Rook(new Sprite(tBlackRook), -2, 0, 0),
@@ -110,11 +101,14 @@ void Game::run() {
 
     while (window.isOpen()) {
         Event event;
+        Vector2i mousePos = Mouse::getPosition(window);
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed) {
                 window.close();
             }
+            mouseEvents(&event, board, mouseButtonReleased, mousePos);
         }
+        update(board, mousePos, mouseButtonReleased);
 
         window.clear();
         window.draw(sBoard);
@@ -125,5 +119,52 @@ void Game::run() {
         }
         window.display();
     }
+}
 
+void Game::mouseEvents(Event *event, Piece *board[][8], bool &mouseButtonReleased, sf::Vector2i mousePos) {
+    if (event->type == Event::MouseButtonPressed) {
+        if (event->key.code == Mouse::Left) {
+            for (int y = 0; y < 8; y++) {
+                for (int x = 0; x < 8; x++) {
+                    if (board[y][x]->getId() != 0) {
+                        if (board[y][x]->getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                            board[y][x]->setIsMove(true);
+                            board[y][x]->setIsBeingModified(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    } else if (event->type == Event::MouseButtonReleased) {
+        if (event->key.code == Mouse::Left) {
+            for (int y = 0; y < 8; y++) {
+                for (int x = 0; x < 8; x++) {
+                    board[y][x]->setIsMove(false);
+                }
+            }
+            mouseButtonReleased = true;
+        }
+    }
+}
+
+void Game::update(Piece *board[][8], sf::Vector2i mousePos, bool &mouseButtonReleased) {
+    for (int y = 0; y < 8; y++) {
+        for (int x = 0; x < 8; x++) {
+            if (board[y][x]->getId() != 0) {
+                if (board[y][x]->isIsMove()) {
+                    board[y][x]->setSpritePos(
+                            mousePos.x - SPRITE_SIZE / 2,
+                            mousePos.y - SPRITE_SIZE / 2);
+                } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified()) {
+                    board[y][x]->setSpritePos(
+                            (mousePos.x / SPRITE_SIZE) * SPRITE_SIZE,
+                            (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
+                    mouseButtonReleased = false;
+                    board[y][x]->setIsBeingModified(false);
+                    break;
+                }
+            }
+        }
+    }
 }

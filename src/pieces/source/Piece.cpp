@@ -4,7 +4,10 @@
 
 #include "../headers/Piece.h"
 
-Piece::Piece() {}
+Piece::Piece() {
+    this->isMove = false;
+    this->isBeingModified = false;
+}
 
 sf::Sprite Piece::getSprite() {
     return *this->sprite;
@@ -20,4 +23,24 @@ int Piece::getId() const {
 
 void Piece::setId(int id) {
     Piece::id = id;
+}
+
+bool Piece::isIsMove() {
+    return isMove;
+}
+
+void Piece::setIsMove(bool isMove) {
+    Piece::isMove = isMove;
+}
+
+void Piece::setSpritePos(int x, int y) {
+    this->sprite->setPosition(x, y);
+}
+
+bool Piece::getIsBeingModified() {
+    return isBeingModified;
+}
+
+void Piece::setIsBeingModified(bool isBeingModified) {
+    Piece::isBeingModified = isBeingModified;
 }

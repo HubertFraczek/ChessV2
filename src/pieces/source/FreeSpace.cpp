@@ -4,4 +4,6 @@
 
 #include "../headers/FreeSpace.h"
 
-FreeSpace::FreeSpace() {}
+FreeSpace::FreeSpace() {
+    this->id = 0;
+}
