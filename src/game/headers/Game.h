@@ -18,11 +18,8 @@ private:
     int const FPS = 30;
     int const SPRITE_SIZE = 100;
     bool mouseButtonReleased = false;
-    int dx; int dy;
 public:
     void run();
-    void mouseEvents(sf::Event *event, Piece *board[][8], bool &mouseButtonReleased, sf::Vector2i mousePos);
-    void update(Piece *board[][8], sf::Vector2i mousePos, bool &mouseButtonReleased);
 
 };
 
