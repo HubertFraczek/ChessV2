@@ -95,13 +95,22 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             mousePos.x - SPRITE_SIZE / 2,
                             mousePos.y - SPRITE_SIZE / 2);
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified()) {
-                    board[y][x]->setSpritePos(
-                            (mousePos.x / SPRITE_SIZE) * SPRITE_SIZE,
-                            (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
-                    mouseButtonReleased = false;
-                    board[y][x]->setIsBeingModified(false);
-                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
-                    printDebug();
+                    if (isLegal(mousePos, x, y)) {
+                        if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
+                            board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = new FreeSpace();
+                        }
+                        board[y][x]->setSpritePos(
+                                (mousePos.x / SPRITE_SIZE) * SPRITE_SIZE,
+                                (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
+                        mouseButtonReleased = false;
+                        board[y][x]->setIsBeingModified(false);
+                        swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+                        printDebug();
+                    } else {
+                        board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
+                        mouseButtonReleased = false;
+                        board[y][x]->setIsBeingModified(false);
+                    }
                     break;
                 }
             }
@@ -143,25 +152,125 @@ bool Board::isLegal(sf::Vector2i mousePos, int x, int y) {
 }
 
 bool Board::isLegalRook(sf::Vector2i mousePos, int x, int y) {
-    return false;
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (newX == x && board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        if (newY > y) {
+            for (int i = y + 1; i < newY; i++) {
+                if (board[i][newX]->getColor() != 0) return false;
+            }
+            return true;
+        } else {
+            for (int i = newY + 1; i < y; i++) {
+                if (board[i][newX]->getColor() != 0) return false;
+            }
+            return true;
+        }
+    } else if (newY == y && board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        if (newX > x) {
+            for (int i = x + 1; i < newX; i++) {
+                if (board[newY][i]->getColor() != 0) return false;
+            }
+            return true;
+        } else {
+            for (int i = newX + 1; i < x; i++) {
+                if (board[newY][i]->getColor() != 0) return false;
+            }
+            return true;
+        }
+    } else return false;
 }
 
 bool Board::isLegalKnight(sf::Vector2i mousePos, int x, int y) {
-    return false;
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (board[y][x]->getColor() == -1) {
+        if (abs(x - newX) == 2 && abs(y - newY) == 1 && board[newY][newX]->getColor() != -1) return true;
+        else if (abs(x - newX) == 1 && abs(y - newY) == 2 && board[newY][newX]->getColor() != -1) return true;
+        else return false;
+    } else if (board[y][x]->getColor() == 1) {
+        if (abs(x - newX) == 2 && abs(y - newY) == 1 && board[newY][newX]->getColor() != 1) return true;
+        else if (abs(x - newX) == 1 && abs(y - newY) == 2 && board[newY][newX]->getColor() != 1) return true;
+        else return false;
+    } else {
+        return false;
+    }
 }
 
 bool Board::isLegalBishop(sf::Vector2i mousePos, int x, int y) {
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        int tmpY = y, tmpX = x;
+        while (true) {
+            if (newY > y) tmpY++;
+            else tmpY--;
+
+            if (newX > x) tmpX++;
+            else tmpX--;
+
+            if (tmpX == newX && tmpY == newY) break;
+
+            if (board[tmpY][tmpX]->getColor() != 0) return false;
+        }
+        return true;
+    }
     return false;
 }
 
 bool Board::isLegalQueen(sf::Vector2i mousePos, int x, int y){
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (newX == x && board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        if (newY > y) {
+            for (int i = y + 1; i < newY; i++) {
+                if (board[i][newX]->getColor() != 0) return false;
+            }
+            return true;
+        } else {
+            for (int i = newY + 1; i < y; i++) {
+                if (board[i][newX]->getColor() != 0) return false;
+            }
+            return true;
+        }
+    } else if (newY == y && board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        if (newX > x) {
+            for (int i = x + 1; i < newX; i++) {
+                if (board[newY][i]->getColor() != 0) return false;
+            }
+            return true;
+        } else {
+            for (int i = newX + 1; i < x; i++) {
+                if (board[newY][i]->getColor() != 0) return false;
+            }
+            return true;
+        }
+    } else if (board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        int tmpY = y, tmpX = x;
+        while (true) {
+            if (newY > y) tmpY++;
+            else tmpY--;
+
+            if (newX > x) tmpX++;
+            else tmpX--;
+
+            if (tmpX == newX && tmpY == newY) break;
+
+            if (board[tmpY][tmpX]->getColor() != 0) return false;
+        }
+        return true;
+    }
     return false;
 }
 
 bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
-    return false;
+    return true;
 }
 
 bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
-    return false;
+    return true;
 }
