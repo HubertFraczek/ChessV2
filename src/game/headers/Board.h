@@ -31,6 +31,7 @@ public:
     void update(sf::Vector2i mousePos, bool &mouseButtonReleased);
     Piece* getElement(int x, int y);
     void printDebug();
+    void swap(int oldBoardX, int oldBoardY, int newBoardX, int newBoardY);
 };
 
 

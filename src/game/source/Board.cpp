@@ -100,6 +100,7 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
                     mouseButtonReleased = false;
                     board[y][x]->setIsBeingModified(false);
+                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
                     printDebug();
                     break;
                 }
@@ -123,4 +124,10 @@ void Board::printDebug() {
         std::cout << "\n";
     }
     std::cout << "\n";
+}
+
+void Board::swap(int oldBoardX, int oldBoardY, int newBoardX, int newBoardY) {
+    Piece* tmp = board[oldBoardY][oldBoardX];
+    board[oldBoardY][oldBoardX] = board[newBoardY][newBoardX];
+    board[newBoardY][newBoardX] = tmp;
 }
