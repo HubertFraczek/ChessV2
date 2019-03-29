@@ -32,6 +32,14 @@ public:
     Piece* getElement(int x, int y);
     void printDebug();
     void swap(int oldBoardX, int oldBoardY, int newBoardX, int newBoardY);
+    bool isLegal(sf::Vector2i mousePos, int x, int y);
+    bool isLegalRook(sf::Vector2i mousePos, int x, int y);
+    bool isLegalKnight(sf::Vector2i mousePos, int x, int y);
+    bool isLegalBishop(sf::Vector2i mousePos, int x, int y);
+    bool isLegalQueen(sf::Vector2i mousePos, int x, int y);
+    bool isLegalKing(sf::Vector2i mousePos, int x, int y);
+    bool isLegalPawn(sf::Vector2i mousePos, int x, int y);
+
 };
 
 

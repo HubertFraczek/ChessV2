@@ -131,3 +131,37 @@ void Board::swap(int oldBoardX, int oldBoardY, int newBoardX, int newBoardY) {
     board[oldBoardY][oldBoardX] = board[newBoardY][newBoardX];
     board[newBoardY][newBoardX] = tmp;
 }
+
+bool Board::isLegal(sf::Vector2i mousePos, int x, int y) {
+    if      (board[y][x]->getId() == -2 || board[y][x]->getId() == 2) return isLegalRook(mousePos, x, y);
+    else if (board[y][x]->getId() == -3 || board[y][x]->getId() == 3) return isLegalKnight(mousePos, x, y);
+    else if (board[y][x]->getId() == -4 || board[y][x]->getId() == 4) return isLegalBishop(mousePos, x, y);
+    else if (board[y][x]->getId() == -5 || board[y][x]->getId() == 5) return isLegalQueen(mousePos, x, y);
+    else if (board[y][x]->getId() == -6 || board[y][x]->getId() == 6) return isLegalKing(mousePos, x, y);
+    else if (board[y][x]->getId() == -1 || board[y][x]->getId() == 1) return isLegalPawn(mousePos, x, y);
+    else return false;
+}
+
+bool Board::isLegalRook(sf::Vector2i mousePos, int x, int y) {
+    return false;
+}
+
+bool Board::isLegalKnight(sf::Vector2i mousePos, int x, int y) {
+    return false;
+}
+
+bool Board::isLegalBishop(sf::Vector2i mousePos, int x, int y) {
+    return false;
+}
+
+bool Board::isLegalQueen(sf::Vector2i mousePos, int x, int y){
+    return false;
+}
+
+bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
+    return false;
+}
+
+bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
+    return false;
+}
