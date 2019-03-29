@@ -44,3 +44,11 @@ bool Piece::getIsBeingModified() {
 void Piece::setIsBeingModified(bool isBeingModified) {
     Piece::isBeingModified = isBeingModified;
 }
+
+int Piece::getColor() {
+    return color;
+}
+
+void Piece::setColor(int color) {
+    Piece::color = color;
+}

@@ -6,4 +6,5 @@
 
 FreeSpace::FreeSpace() {
     this->id = 0;
+    this->color = 0;
 }
