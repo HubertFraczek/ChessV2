@@ -103,11 +103,15 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified()) {
                     bool proceed = true;
                     int color = board[y][x]->getColor();
+                    Piece *tmp = board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE];
+                    if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
+                        board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = new FreeSpace();
+                    }
                     swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
                     std::pair<int, int> king = findKing(color);
-                    std::cout << king.first << " " << king.second << std::endl;
                     if (isAttacked(color, king.first, king.second)) proceed = false;
                     swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+                    board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = tmp;
 
                     if (isLegal(mousePos, x, y) && proceed) {
                         if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
