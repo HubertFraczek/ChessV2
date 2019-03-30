@@ -101,7 +101,15 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             mousePos.x - SPRITE_SIZE / 2,
                             mousePos.y - SPRITE_SIZE / 2);
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified()) {
-                    if (isLegal(mousePos, x, y)) {
+                    bool proceed = true;
+                    int color = board[y][x]->getColor();
+                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+                    std::pair<int, int> king = findKing(color);
+                    std::cout << king.first << " " << king.second << std::endl;
+                    if (isAttacked(color, king.first, king.second)) proceed = false;
+                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+
+                    if (isLegal(mousePos, x, y) && proceed) {
                         if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
                             board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = new FreeSpace();
                         }
@@ -111,10 +119,8 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         mouseButtonReleased = false;
                         board[y][x]->setIsBeingModified(false);
                         swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
-                        printDebug();
 
-                        std::pair<int, int> king = findKing(board[y][x]->getColor());
-                        if (isAttacked(board[y][x]->getColor(), king.first, king.second)) std::cout << "I'm attacked!" << std::endl;
+                        printDebug();
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -331,7 +337,10 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             board[y][x]->setHasMovedBy2(true);
             return true;
         } else if (board[newY - 1][newX]->getId() == 1 && board[newY - 1][newX]->isHasMovedBy2()
-                    && y == newY - 1 && (x == newX + 1 || x == newX - 1)) return true;
+                    && y == newY - 1 && (x == newX + 1 || x == newX - 1)) {
+            board[newY - 1][newX] = new FreeSpace();
+            return true;
+        }
             //TODO: reaching end line
         else return false;
     } else if (board[y][x]->getColor() == 1) {
@@ -346,7 +355,10 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             board[y][x]->setHasMovedBy2(true);
             return true; //move by 2
         } else if (board[newY + 1][newX]->getId() == -1 && board[newY + 1][newX]->isHasMovedBy2()
-                    && y == newY + 1 && (x == newX + 1 || x == newX - 1)) return true;
+                    && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
+            board[newY + 1][newX] = new FreeSpace();
+            return true;
+        }
             //TODO: reaching end line
         else return false;
     } else {
