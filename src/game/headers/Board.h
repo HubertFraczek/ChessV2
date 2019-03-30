@@ -13,6 +13,7 @@ class Board {
 private:
     Piece* board[8][8];
     int SPRITE_SIZE;
+    bool whitesMove;
     sf::Texture tWhitePawn;
     sf::Texture tBlackPawn;
     sf::Texture tWhiteRook;

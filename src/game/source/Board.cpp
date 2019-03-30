@@ -18,6 +18,7 @@ using namespace sf;
 
 Board::Board(int SPRITE_SIZE) {
     this->SPRITE_SIZE = SPRITE_SIZE;
+    this->whitesMove = true;
     this->tWhitePawn.loadFromFile("../assets/pieces/wP.png");
     this->tBlackPawn.loadFromFile("../assets/pieces/bP.png");
     this->tWhiteRook.loadFromFile("../assets/pieces/wR.png");
@@ -95,12 +96,14 @@ void Board::mouseEvents(Event *event, bool &mouseButtonReleased, sf::Vector2i mo
 void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
-            if (board[y][x]->getId() != 0) {
+            if (board[y][x]->getId() != 0 &&
+                ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
                 if (board[y][x]->isIsMove()) {
                     board[y][x]->setSpritePos(
                             mousePos.x - SPRITE_SIZE / 2,
                             mousePos.y - SPRITE_SIZE / 2);
-                } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified()) {
+                } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified() &&
+                        ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
                     bool proceed = true;
                     int color = board[y][x]->getColor();
                     Piece *tmp = board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE];
@@ -123,7 +126,7 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         mouseButtonReleased = false;
                         board[y][x]->setIsBeingModified(false);
                         swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
-
+                        whitesMove = !whitesMove;
                         printDebug();
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
