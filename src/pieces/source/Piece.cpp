@@ -8,6 +8,7 @@ Piece::Piece() {
     this->isMove = false;
     this->isBeingModified = false;
     this->hasMovedBy2 = false;
+    this->hasMoved = false;
 }
 
 sf::Sprite Piece::getSprite() {
@@ -60,4 +61,12 @@ bool Piece::isHasMovedBy2() {
 
 void Piece::setHasMovedBy2(bool hasMovedBy2) {
     Piece::hasMovedBy2 = hasMovedBy2;
+}
+
+bool Piece::isHasMoved() {
+    return hasMoved;
+}
+
+void Piece::setHasMoved(bool hasMoved) {
+    Piece::hasMoved = hasMoved;
 }

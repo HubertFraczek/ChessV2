@@ -125,6 +125,7 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                                 (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
                         mouseButtonReleased = false;
                         board[y][x]->setIsBeingModified(false);
+                        board[y][x]->setHasMoved(true);
                         swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
                         whitesMove = !whitesMove;
                         printDebug();
@@ -305,25 +306,27 @@ bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
             else if (newX > 0 && board[newY][newX - 1]->getId() == -1 * board[y][x]->getId()) return false;
             return true;
         }
-        //castling
-//        else if (newX < boardX && newX == 2 && color == 1 && !hasMoved &&
-//                   pieces[7][3]->getId() == 0 && pieces[7][2]->getId() == 0 && pieces[7][1]->getId() == 0 &&
-//                   pieces[7][0]->getId() == 2 && !pieces[7][0]->isHasMoved() && !isAttacked(pieces, 1, 7, 0) &&
-//                   !isAttacked(pieces, 1, 7, 1) && !isAttacked(pieces, 1, 7, 2) && !isAttacked(pieces, 1, 7, 3) &&
-//                   !isAttacked(pieces, 1, 7, 4)) return true;
-//        else if (newX < boardX && newX == 2 && color == -1 && !hasMoved &&
-//                 pieces[0][3]->getId() == 0 && pieces[0][2]->getId() == 0 && pieces[0][1]->getId() == 0 &&
-//                 pieces[0][0]->getId() == -2 && !pieces[0][0]->isHasMoved() && !isAttacked(pieces, -1, 0, 0) &&
-//                 !isAttacked(pieces, -1, 0, 1) && !isAttacked(pieces, -1, 0, 2) && !isAttacked(pieces, -1, 0, 3) &&
-//                 !isAttacked(pieces, -1, 0, 4)) return true;
-//        else if (newX > boardX && newX == 6 && color == 1 && !hasMoved &&
-//                 pieces[7][5]->getId() == 0 && pieces[7][6]->getId() == 0 && pieces[7][7]->getId() == 2 &&
-//                 !pieces[7][7]->isHasMoved() && !isAttacked(pieces, 1, 7, 7) && !isAttacked(pieces, 1, 7, 6) &&
-//                 !isAttacked(pieces, 1, 7, 5) && !isAttacked(pieces, 1, 7, 4)) return true;
-//        else if (newX > boardX && newX == 6 && color == -1 && !hasMoved &&
-//                 pieces[0][5]->getId() == 0 && pieces[0][6]->getId() == 0 && pieces[0][7]->getId() == -2 &&
-//                 !pieces[0][7]->isHasMoved() && !isAttacked(pieces, 1, 0, 7) && !isAttacked(pieces, 1, 0, 6) &&
-//                 !isAttacked(pieces, 1, 0, 5) && !isAttacked(pieces, 1, 0, 4)) return true;
+
+        else if (newY == y && newX == 2 && !board[y][x]->isHasMoved() && board[y][3]->getId() == 0 && board[y][2]->getId() == 0 &&
+                board[y][1]->getId() == 0 && board[y][0]->getId() == board[y][x]->getId() - board[y][x]->getColor()*4 &&
+                !board[y][0]->isHasMoved() && !isAttacked(board[y][x]->getColor(), 0, y) && !isAttacked(board[y][x]->getColor(), 1, y) &&
+                !isAttacked(board[y][x]->getColor(), 2, y) && !isAttacked(board[y][x]->getColor(), 3, y) &&
+                !isAttacked(board[y][x]->getColor(), 4, y)) {
+
+            board[y][0]->setSpritePos((newX + 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+            board[y][0]->setHasMoved(true);
+            swap(0, y, newX + 1, y);
+            return true;
+        }
+        else if (newY == y && newX == 6 && !board[y][x]->isHasMoved() && board[y][5]->getId() == 0 && board[y][6]->getId() == 0 &&
+                 board[y][7]->getId() == board[y][x]->getId() - board[y][x]->getColor()*4 &&
+                 !board[y][7]->isHasMoved() && !isAttacked(board[y][x]->getColor(), 7, y) && !isAttacked(board[y][x]->getColor(), 6, y) &&
+                 !isAttacked(board[y][x]->getColor(), 5, y) && !isAttacked(board[y][x]->getColor(), x, y)) {
+            board[y][7]->setSpritePos((newX - 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+            board[y][7]->setHasMoved(true);
+            swap(7, y, newX - 1, y);
+            return true;
+        }
     }
     return false;
 }
