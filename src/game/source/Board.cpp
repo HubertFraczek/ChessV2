@@ -59,6 +59,12 @@ Board::Board(int SPRITE_SIZE) {
     this->board[7][7] = new Rook(new Sprite(tWhiteRook), 2, 7*SPRITE_SIZE, 7*SPRITE_SIZE);
 }
 
+Board::~Board() {
+    for (int y = 0; y < 8; y++) {
+        delete [] *board[y];
+    }
+}
+
 void Board::mouseEvents(Event *event, bool &mouseButtonReleased, sf::Vector2i mousePos) {
     if (event->type == Event::MouseButtonPressed) {
         if (event->key.code == Mouse::Left) {
@@ -106,6 +112,9 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         board[y][x]->setIsBeingModified(false);
                         swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
                         printDebug();
+
+                        std::pair<int, int> king = findKing(board[y][x]->getColor());
+                        if (isAttacked(board[y][x]->getColor(), king.first, king.second)) std::cout << "I'm attacked!" << std::endl;
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -268,9 +277,105 @@ bool Board::isLegalQueen(sf::Vector2i mousePos, int x, int y){
 }
 
 bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
-    return true;
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (board[newY][newX]->getColor() != board[y][x]->getColor()) {
+        if ((abs(x - newX) == 1 || abs(x - newX) == 0) && (abs(y - newY) == 1 || abs(y - newY) == 0)) {
+            if (newY < 7 && board[newY + 1][newX]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newY > 0 && board[newY - 1][newX]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newY < 7 && newX < 7 && board[newY + 1][newX + 1]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newY > 0 && newX < 7 && board[newY - 1][newX + 1]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newY < 7 && newX > 0 && board[newY + 1][newX - 1]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newY > 0 && newX > 0 && board[newY - 1][newX - 1]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newX < 7 && board[newY][newX + 1]->getId() == -1 * board[y][x]->getId()) return false;
+            else if (newX > 0 && board[newY][newX - 1]->getId() == -1 * board[y][x]->getId()) return false;
+            return true;
+        }
+        //castling
+//        else if (newX < boardX && newX == 2 && color == 1 && !hasMoved &&
+//                   pieces[7][3]->getId() == 0 && pieces[7][2]->getId() == 0 && pieces[7][1]->getId() == 0 &&
+//                   pieces[7][0]->getId() == 2 && !pieces[7][0]->isHasMoved() && !isAttacked(pieces, 1, 7, 0) &&
+//                   !isAttacked(pieces, 1, 7, 1) && !isAttacked(pieces, 1, 7, 2) && !isAttacked(pieces, 1, 7, 3) &&
+//                   !isAttacked(pieces, 1, 7, 4)) return true;
+//        else if (newX < boardX && newX == 2 && color == -1 && !hasMoved &&
+//                 pieces[0][3]->getId() == 0 && pieces[0][2]->getId() == 0 && pieces[0][1]->getId() == 0 &&
+//                 pieces[0][0]->getId() == -2 && !pieces[0][0]->isHasMoved() && !isAttacked(pieces, -1, 0, 0) &&
+//                 !isAttacked(pieces, -1, 0, 1) && !isAttacked(pieces, -1, 0, 2) && !isAttacked(pieces, -1, 0, 3) &&
+//                 !isAttacked(pieces, -1, 0, 4)) return true;
+//        else if (newX > boardX && newX == 6 && color == 1 && !hasMoved &&
+//                 pieces[7][5]->getId() == 0 && pieces[7][6]->getId() == 0 && pieces[7][7]->getId() == 2 &&
+//                 !pieces[7][7]->isHasMoved() && !isAttacked(pieces, 1, 7, 7) && !isAttacked(pieces, 1, 7, 6) &&
+//                 !isAttacked(pieces, 1, 7, 5) && !isAttacked(pieces, 1, 7, 4)) return true;
+//        else if (newX > boardX && newX == 6 && color == -1 && !hasMoved &&
+//                 pieces[0][5]->getId() == 0 && pieces[0][6]->getId() == 0 && pieces[0][7]->getId() == -2 &&
+//                 !pieces[0][7]->isHasMoved() && !isAttacked(pieces, 1, 0, 7) && !isAttacked(pieces, 1, 0, 6) &&
+//                 !isAttacked(pieces, 1, 0, 5) && !isAttacked(pieces, 1, 0, 4)) return true;
+    }
+    return false;
 }
 
 bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
-    return true;
+    int newX = (mousePos.x / SPRITE_SIZE);
+    int newY = (mousePos.y / SPRITE_SIZE);
+
+    if (board[y][x]->getColor() == -1) {
+        if (newY == y + 1 && newX == x && board[newY][newX]->getColor() == 0) {
+            board[y][x]->setHasMovedBy2(false);
+            return true; //move by 1
+        } else if (newY == y + 1 && ((newX == x + 1 && board[newY][newX]->getColor() == 1)
+                    || (newX == x - 1 && board[newY][newX]->getColor() == 1))) {
+            board[y][x]->setHasMovedBy2(false);
+            return true;
+        } else if (y == 1 && newY == y + 2 && x == newX && board[2][x]->getColor() == 0 && board[3][x]->getColor() == 0) {
+            board[y][x]->setHasMovedBy2(true);
+            return true;
+        } else if (board[newY - 1][newX]->getId() == 1 && board[newY - 1][newX]->isHasMovedBy2()
+                    && y == newY - 1 && (x == newX + 1 || x == newX - 1)) return true;
+            //TODO: reaching end line
+        else return false;
+    } else if (board[y][x]->getColor() == 1) {
+        if (newY == y - 1 && newX == x && board[newY][newX]->getColor() == 0) {
+            board[y][x]->setHasMovedBy2(false);
+            return true; //move by 1
+        } else if (newY == y - 1 && ((newX == x + 1 && board[newY][newX]->getColor() == -1) ||
+                                          (newX == x - 1 && board[newY][newX]->getColor() == -1))) {
+            board[y][x]->setHasMovedBy2(false);
+            return true; //beating
+        } else if (y == 6 && newY == y - 2 && x == newX && board[5][x]->getColor() == 0 && board[4][x]->getColor() == 0) {
+            board[y][x]->setHasMovedBy2(true);
+            return true; //move by 2
+        } else if (board[newY + 1][newX]->getId() == -1 && board[newY + 1][newX]->isHasMovedBy2()
+                    && y == newY + 1 && (x == newX + 1 || x == newX - 1)) return true;
+            //TODO: reaching end line
+        else return false;
+    } else {
+        return false;
+    }
+}
+
+bool Board::isAttacked(int color, int x, int y) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board[i][j]->getColor() == -1*color) {
+                if (isLegal(sf::Vector2i(x*SPRITE_SIZE, y*SPRITE_SIZE), j, i)) return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::pair<int, int> Board::findKing(int color) {
+    for (int y = 0; y < 8; y++) {
+        for (int x = 0; x < 8; x++) {
+            if ((board[y][x]->getId() == 6 && color == 1) ||
+                (board[y][x]->getId() == -6 && color == -1))
+                return std::pair<int, int>{x, y};
+        }
+    }
+}
+
+bool Board::isRevealingCheck(sf::Vector2i mousePos, int x, int y) {
+    std::pair<int, int> king = findKing(board[y][x]->getColor());
+
 }

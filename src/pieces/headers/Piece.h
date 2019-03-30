@@ -14,6 +14,7 @@ protected:
     bool isMove;
     bool isBeingModified;
     int color;
+    bool hasMovedBy2;
 public:
     Piece();
     virtual sf::Sprite getSprite();
@@ -27,6 +28,8 @@ public:
     virtual void setIsBeingModified(bool isBeingModified);
     virtual int getColor();
     virtual void setColor(int color);
+    bool isHasMovedBy2();
+    void setHasMovedBy2(bool hasMovedBy2);
 
 };
 

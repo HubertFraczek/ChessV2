@@ -27,6 +27,7 @@ private:
     sf::Texture tBlackKing;
 public:
     Board(int SPRITE_SIZE);
+    ~Board();
     void mouseEvents(sf::Event *event, bool &mouseButtonReleased, sf::Vector2i mousePos);
     void update(sf::Vector2i mousePos, bool &mouseButtonReleased);
     Piece* getElement(int x, int y);
@@ -39,7 +40,9 @@ public:
     bool isLegalQueen(sf::Vector2i mousePos, int x, int y);
     bool isLegalKing(sf::Vector2i mousePos, int x, int y);
     bool isLegalPawn(sf::Vector2i mousePos, int x, int y);
-
+    bool isAttacked(int color, int x, int y);
+    std::pair<int, int> findKing(int color);
+    bool isRevealingCheck(sf::Vector2i mousePos, int x, int y);
 };
 
 

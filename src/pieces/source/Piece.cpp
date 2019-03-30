@@ -7,6 +7,7 @@
 Piece::Piece() {
     this->isMove = false;
     this->isBeingModified = false;
+    this->hasMovedBy2 = false;
 }
 
 sf::Sprite Piece::getSprite() {
@@ -51,4 +52,12 @@ int Piece::getColor() {
 
 void Piece::setColor(int color) {
     Piece::color = color;
+}
+
+bool Piece::isHasMovedBy2() {
+    return hasMovedBy2;
+}
+
+void Piece::setHasMovedBy2(bool hasMovedBy2) {
+    Piece::hasMovedBy2 = hasMovedBy2;
 }
