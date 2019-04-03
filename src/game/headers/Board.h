@@ -8,10 +8,12 @@
 
 #include <SFML/Window/Event.hpp>
 #include "../../pieces/headers/Piece.h"
+#include "../../pieces/headers/FreeSpace.h"
 
 class Board {
 private:
     Piece* board[8][8];
+    Piece* freeSpace = new FreeSpace();
     int SPRITE_SIZE;
     bool whitesMove;
     sf::Texture tWhitePawn;

@@ -33,10 +33,10 @@ Board::Board(int SPRITE_SIZE) {
     this->tBlackKing.loadFromFile("../assets/pieces/bK.png");
 
     for (int i = 0; i < 8; i++) {
-        board[2][i] = new FreeSpace();
-        board[3][i] = new FreeSpace();
-        board[4][i] = new FreeSpace();
-        board[5][i] = new FreeSpace();
+        board[2][i] = freeSpace;
+        board[3][i] = freeSpace;
+        board[4][i] = freeSpace;
+        board[5][i] = freeSpace;
         board[1][i] = new Pawn(new Sprite(tBlackPawn), -1, i*SPRITE_SIZE, SPRITE_SIZE);
         board[6][i] = new Pawn(new Sprite(tWhitePawn), 1, i*SPRITE_SIZE, 6*SPRITE_SIZE);
     }
@@ -102,23 +102,12 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                     board[y][x]->setSpritePos(
                             mousePos.x - SPRITE_SIZE / 2,
                             mousePos.y - SPRITE_SIZE / 2);
+                    break;
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified() &&
                         ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
-                    bool proceed = true;
-                    int color = board[y][x]->getColor();
-                    Piece *tmp = board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE];
-                    if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
-                        board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = new FreeSpace();
-                    }
-                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
-                    std::pair<int, int> king = findKing(color);
-                    if (isAttacked(color, king.first, king.second)) proceed = false;
-                    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
-                    board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = tmp;
-
-                    if (isLegal(mousePos, x, y) && proceed) {
+                    if (isLegal(mousePos, x, y) && isRevealingCheck(mousePos, x, y)) {
                         if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
-                            board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = new FreeSpace();
+                            board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = freeSpace;
                         }
                         board[y][x]->setSpritePos(
                                 (mousePos.x / SPRITE_SIZE) * SPRITE_SIZE,
@@ -349,7 +338,7 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             return true;
         } else if (board[newY - 1][newX]->getId() == 1 && board[newY - 1][newX]->isHasMovedBy2()
                     && y == newY - 1 && (x == newX + 1 || x == newX - 1)) {
-            board[newY - 1][newX] = new FreeSpace();
+            board[newY - 1][newX] = freeSpace;
             return true;
         }
             //TODO: reaching end line
@@ -368,7 +357,7 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             return true; //move by 2
         } else if (board[newY + 1][newX]->getId() == -1 && board[newY + 1][newX]->isHasMovedBy2()
                     && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
-            board[newY + 1][newX] = new FreeSpace();
+            board[newY + 1][newX] = freeSpace;
             return true;
         }
             //TODO: reaching end line
@@ -400,6 +389,16 @@ std::pair<int, int> Board::findKing(int color) {
 }
 
 bool Board::isRevealingCheck(sf::Vector2i mousePos, int x, int y) {
-    std::pair<int, int> king = findKing(board[y][x]->getColor());
-
+    bool proceed = true;
+    int color = board[y][x]->getColor();
+    Piece *tmp = board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE];
+    if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
+        board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = freeSpace;
+    }
+    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+    std::pair<int, int> king = findKing(color);
+    if (isAttacked(color, king.first, king.second)) proceed = false;
+    swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+    board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = tmp;
+    return proceed;
 }
