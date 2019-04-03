@@ -344,7 +344,8 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             board[y][x]->setHasMovedBy2(false);
             return true;
         } else if (y == 1 && newY == y + 2 && x == newX && board[2][x]->getColor() == 0 && board[3][x]->getColor() == 0) {
-            board[y][x]->setHasMovedBy2(true);
+            if (board[newY][newX-1]->getId() == 1 || board[newY][newX+1]->getId() == 1)
+                board[y][x]->setHasMovedBy2(true);
             return true;
         } else if (board[newY - 1][newX]->getId() == 1 && board[newY - 1][newX]->isHasMovedBy2()
                     && y == newY - 1 && (x == newX + 1 || x == newX - 1)) {
@@ -362,7 +363,8 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             board[y][x]->setHasMovedBy2(false);
             return true; //beating
         } else if (y == 6 && newY == y - 2 && x == newX && board[5][x]->getColor() == 0 && board[4][x]->getColor() == 0) {
-            board[y][x]->setHasMovedBy2(true);
+            if (board[newY][newX-1]->getId() == 1 || board[newY][newX+1]->getId() == 1)
+                board[y][x]->setHasMovedBy2(true);
             return true; //move by 2
         } else if (board[newY + 1][newX]->getId() == -1 && board[newY + 1][newX]->isHasMovedBy2()
                     && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
