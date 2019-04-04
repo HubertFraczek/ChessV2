@@ -94,6 +94,9 @@ void Board::mouseEvents(Event *event, bool &mouseButtonReleased, sf::Vector2i mo
 }
 
 void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
+    int newX = mousePos.x / SPRITE_SIZE;
+    int newY = mousePos.y / SPRITE_SIZE;
+
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
             if (board[y][x]->getId() != 0 &&
@@ -105,17 +108,25 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                     break;
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified() &&
                         ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
+
+//                    if (newX > 7 || newX < 0 || newY > 7 || newY < 0) {
+//                        board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
+//                        mouseButtonReleased = false;
+//                        board[y][x]->setIsBeingModified(false);
+//                    }
+
                     if (isLegal(mousePos, x, y) && isRevealingCheck(mousePos, x, y)) {
-                        if (board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE]->getId() != 0) {
-                            board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = freeSpace;
+                        if (board[newY][newX]->getId() != 0) {
+                            board[newY][newX] = freeSpace;
                         }
                         board[y][x]->setSpritePos(
-                                (mousePos.x / SPRITE_SIZE) * SPRITE_SIZE,
-                                (mousePos.y / SPRITE_SIZE) * SPRITE_SIZE);
+                                (newX) * SPRITE_SIZE,
+                                (newY) * SPRITE_SIZE);
                         mouseButtonReleased = false;
                         board[y][x]->setIsBeingModified(false);
                         board[y][x]->setHasMoved(true);
-                        swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
+                        turnOffHasMovedBy2(board[y][x]->getColor()*(-1));
+                        swap(x, y, newX, newY);
                         whitesMove = !whitesMove;
                         printDebug();
                     } else {
@@ -401,4 +412,12 @@ bool Board::isRevealingCheck(sf::Vector2i mousePos, int x, int y) {
     swap(x, y, mousePos.x / SPRITE_SIZE, mousePos.y / SPRITE_SIZE);
     board[mousePos.y / SPRITE_SIZE][mousePos.x / SPRITE_SIZE] = tmp;
     return proceed;
+}
+
+void Board::turnOffHasMovedBy2(int color) {
+    for (int y = 0; y < 8; y++) {
+        for (int x = 0; x < 8; x++) {
+            if (board[y][x]->getColor() == color) board[y][x]->setHasMovedBy2(false);
+        }
+    }
 }

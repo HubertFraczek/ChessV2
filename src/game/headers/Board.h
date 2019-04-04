@@ -46,6 +46,7 @@ public:
     bool isAttacked(int color, int x, int y);
     std::pair<int, int> findKing(int color);
     bool isRevealingCheck(sf::Vector2i mousePos, int x, int y);
+    void turnOffHasMovedBy2(int color);
 };
 
 
