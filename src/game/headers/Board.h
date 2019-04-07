@@ -47,6 +47,14 @@ public:
     std::pair<int, int> findKing(int color);
     bool isRevealingCheck(sf::Vector2i mousePos, int x, int y);
     void turnOffHasMovedBy2(int color);
+    bool anyLegalMove(int x, int y);
+    bool anyLegalMoveRook(int x, int y);
+    bool anyLegalMoveKnight(int x, int y);
+    bool anyLegalMoveBishop(int x, int y);
+    bool anyLegalMoveQueen(int x, int y);
+    bool anyLegalMoveKing(int x, int y);
+    bool anyLegalMovePawn(int x, int y);
+    bool isGameOver();
 };
 
 

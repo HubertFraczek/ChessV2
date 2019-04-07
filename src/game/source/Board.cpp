@@ -108,7 +108,6 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                     break;
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified() &&
                         ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
-
 //                    if (newX > 7 || newX < 0 || newY > 7 || newY < 0) {
 //                        board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
 //                        mouseButtonReleased = false;
@@ -129,6 +128,10 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         swap(x, y, newX, newY);
                         whitesMove = !whitesMove;
                         printDebug();
+                        std::pair<int, int> king = findKing(board[newY][newX]->getColor()*(-1));
+                        if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second)) {
+                            std::cout << "isGameOver: " << isGameOver() << std::endl;
+                        }
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -420,4 +423,68 @@ void Board::turnOffHasMovedBy2(int color) {
             if (board[y][x]->getColor() == color) board[y][x]->setHasMovedBy2(false);
         }
     }
+}
+
+bool Board::anyLegalMove(int x, int y) {
+    if      (board[y][x]->getId() == -2 || board[y][x]->getId() == 2) return anyLegalMoveRook(x, y);
+    else if (board[y][x]->getId() == -3 || board[y][x]->getId() == 3) return anyLegalMoveKnight(x, y);
+    else if (board[y][x]->getId() == -4 || board[y][x]->getId() == 4) return anyLegalMoveBishop(x, y);
+    else if (board[y][x]->getId() == -5 || board[y][x]->getId() == 5) return anyLegalMoveQueen(x, y);
+    else if (board[y][x]->getId() == -6 || board[y][x]->getId() == 6) return anyLegalMoveKing(x, y);
+    else if (board[y][x]->getId() == -1 || board[y][x]->getId() == 1) return anyLegalMovePawn(x, y);
+    else return false;
+}
+
+bool Board::anyLegalMoveRook(int x, int y) {
+    for (int i = x; i < 8; i++) {
+        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) return true;
+    }
+    for (int i = x; i > 0; i--) {
+        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) return true;
+    }
+    for (int i = y; i < 8; i++) {
+        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) return true;
+    }
+    for (int i = y; i > 0; i--) {
+        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) return true;
+    }
+    return false;
+}
+
+bool Board::anyLegalMoveKnight(int x, int y) {
+
+    return false;
+}
+
+bool Board::anyLegalMoveBishop(int x, int y) {
+
+    return false;
+}
+
+bool Board::anyLegalMoveQueen(int x, int y) {
+
+    return false;
+}
+
+bool Board::anyLegalMoveKing(int x, int y) {
+
+    return false;
+}
+
+bool Board::anyLegalMovePawn(int x, int y) {
+
+    return false;
+}
+
+bool Board::isGameOver() {
+    int color;
+    if (whitesMove) color = 1;
+    else color = -1;
+    for (int y = 0; y < 8; y++) {
+        for (int x = 0; x < 8; x++) {
+            if (board[y][x]->getColor() == color)
+                if (anyLegalMove(x, y)) return false;
+        }
+    }
+    return true;
 }
