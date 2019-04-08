@@ -570,7 +570,30 @@ bool Board::anyLegalMoveKing(int x, int y) {
 }
 
 bool Board::anyLegalMovePawn(int x, int y) {
-
+    if (board[y][x]->getColor() == 1 && y > 0 && isLegalPawn(sf::Vector2i(x*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+        isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == -1 && y < 7 && isLegalPawn(sf::Vector2i(x*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == -1 && y < 6 && isLegalPawn(sf::Vector2i(x*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == 1 && y > 1 && isLegalPawn(sf::Vector2i(x*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == -1 && x < 7 && y < 7 && isLegalPawn(sf::Vector2i((x+1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == -1 && x > 0 && y < 7 && isLegalPawn(sf::Vector2i((x-1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == 1 && x < 7 && y > 0 && isLegalPawn(sf::Vector2i((x+1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (board[y][x]->getColor() == 1 && x > 0 && y > 0 && isLegalPawn(sf::Vector2i((x-1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
     return false;
 }
 
