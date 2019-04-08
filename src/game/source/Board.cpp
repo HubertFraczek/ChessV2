@@ -437,27 +437,105 @@ bool Board::anyLegalMove(int x, int y) {
 
 bool Board::anyLegalMoveRook(int x, int y) {
     for (int i = x; i < 8; i++) {
-        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) return true;
+        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
+            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
+            return true;
+        }
     }
     for (int i = x; i > 0; i--) {
-        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) return true;
+        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
+            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
+            return true;
+        }
     }
     for (int i = y; i < 8; i++) {
-        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) return true;
+        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
+            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
+            return true;
+        }
     }
     for (int i = y; i > 0; i--) {
-        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) return true;
+        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
+            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
+            return true;
+        }
     }
     return false;
 }
 
-bool Board::anyLegalMoveKnight(int x, int y) {
-
+bool Board::anyLegalMoveKnight(int x, int y) { //bugged af
+    if (x >= 2 && y >= 1 && isLegalKnight(sf::Vector2i((x-2)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+                            isRevealingCheck(sf::Vector2i((x-2)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x >= 1 && y >= 2 && isLegalKnight(sf::Vector2i((x-1)*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x <= 6 && y >= 2 && isLegalKnight(sf::Vector2i((x+1)*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y-2)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x <= 5 && y >= 1 && isLegalKnight(sf::Vector2i((x+2)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x+2)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x <= 5 && y <= 6 && isLegalKnight(sf::Vector2i((x+2)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x+2)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x <= 6 && y <= 5 && isLegalKnight(sf::Vector2i((x+1)*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x >= 1 && y <= 5 && isLegalKnight(sf::Vector2i((x-1)*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y+2)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
+    else if (x >= 2 && y <= 6 && isLegalKnight(sf::Vector2i((x-2)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+                                 isRevealingCheck(sf::Vector2i((x-2)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y)) {
+        return true;
+    }
     return false;
 }
 
 bool Board::anyLegalMoveBishop(int x, int y) {
-
+//    int tmpX = x;
+//    int tmpY = y;
+//    while (true) {
+//        if (tmpX >= 7 && tmpY >= 7) break;
+//        tmpX++;
+//        tmpY++;
+//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+//    }
+//    tmpX = x;
+//    tmpY = y;
+//    while (true) {
+//        if (tmpX <= 0 && tmpY <= 0) break;
+//        tmpX--;
+//        tmpY--;
+//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+//    }
+//    tmpX = x;
+//    tmpY = y;
+//    while (true) {
+//        if (tmpX >= 7 && tmpY <= 0) break;
+//        tmpX++;
+//        tmpY--;
+//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+//    }
+//    tmpX = x;
+//    tmpY = y;
+//    while (true) {
+//        if (tmpX <= 0 && tmpY >= 7) break;
+//        tmpX--;
+//        tmpY++;
+//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+//    }
     return false;
 }
 
@@ -483,7 +561,10 @@ bool Board::isGameOver() {
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
             if (board[y][x]->getColor() == color)
-                if (anyLegalMove(x, y)) return false;
+                if (anyLegalMove(x, y)) {
+                    std::cout << "You can block with: " << board[y][x]->getId() << " game is: ";
+                    return false;
+                }
         }
     }
     return true;
