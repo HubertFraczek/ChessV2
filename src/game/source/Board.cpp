@@ -504,38 +504,38 @@ bool Board::anyLegalMoveKnight(int x, int y) { //bugged af
 }
 
 bool Board::anyLegalMoveBishop(int x, int y) {
-//    int tmpX = x;
-//    int tmpY = y;
-//    while (true) {
-//        if (tmpX >= 7 && tmpY >= 7) break;
-//        tmpX++;
-//        tmpY++;
-//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-//    }
-//    tmpX = x;
-//    tmpY = y;
-//    while (true) {
-//        if (tmpX <= 0 && tmpY <= 0) break;
-//        tmpX--;
-//        tmpY--;
-//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-//    }
-//    tmpX = x;
-//    tmpY = y;
-//    while (true) {
-//        if (tmpX >= 7 && tmpY <= 0) break;
-//        tmpX++;
-//        tmpY--;
-//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-//    }
-//    tmpX = x;
-//    tmpY = y;
-//    while (true) {
-//        if (tmpX <= 0 && tmpY >= 7) break;
-//        tmpX--;
-//        tmpY++;
-//        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-//    }
+    int tmpX = x;
+    int tmpY = y;
+    while (tmpX < 7 && tmpY < 7) {
+        tmpX++;
+        tmpY++;
+        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+    }
+    tmpX = x;
+    tmpY = y;
+    while (tmpX > 0 && tmpY > 0) {
+        tmpX--;
+        tmpY--;
+        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+    }
+    tmpX = x;
+    tmpY = y;
+    while (tmpX < 7 && tmpY > 0) {
+        tmpX++;
+        tmpY--;
+        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+    }
+    tmpX = x;
+    tmpY = y;
+    while (tmpX > 0 && tmpY < 7) {
+        tmpX--;
+        tmpY++;
+        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
+            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
+    }
     return false;
 }
 
