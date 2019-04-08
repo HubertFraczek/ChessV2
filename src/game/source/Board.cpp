@@ -439,28 +439,24 @@ bool Board::anyLegalMoveRook(int x, int y) {
     for (int i = x; i < 8; i++) {
         if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
             isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
-            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
             return true;
         }
     }
     for (int i = x; i > 0; i--) {
         if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
             isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
-            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
             return true;
         }
     }
     for (int i = y; i < 8; i++) {
         if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
-            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
             return true;
         }
     }
     for (int i = y; i > 0; i--) {
         if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
-            std::cout << "ROOK MOVE: x = " << i << " y = " << y << std::endl;
             return true;
         }
     }
@@ -540,62 +536,8 @@ bool Board::anyLegalMoveBishop(int x, int y) {
 }
 
 bool Board::anyLegalMoveQueen(int x, int y) {
-    for (int i = x; i < 8; i++) {
-        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
-            return true;
-        }
-    }
-    for (int i = x; i > 0; i--) {
-        if (isLegalRook(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(i*SPRITE_SIZE, y*SPRITE_SIZE), x, y)) {
-            return true;
-        }
-    }
-    for (int i = y; i < 8; i++) {
-        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
-            return true;
-        }
-    }
-    for (int i = y; i > 0; i--) {
-        if (isLegalRook(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, i*SPRITE_SIZE), x, y)) {
-            return true;
-        }
-    }
-    int tmpX = x;
-    int tmpY = y;
-    while (tmpX < 7 && tmpY < 7) {
-        tmpX++;
-        tmpY++;
-        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-    }
-    tmpX = x;
-    tmpY = y;
-    while (tmpX > 0 && tmpY > 0) {
-        tmpX--;
-        tmpY--;
-        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-    }
-    tmpX = x;
-    tmpY = y;
-    while (tmpX < 7 && tmpY > 0) {
-        tmpX++;
-        tmpY--;
-        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-    }
-    tmpX = x;
-    tmpY = y;
-    while (tmpX > 0 && tmpY < 7) {
-        tmpX--;
-        tmpY++;
-        if (isLegalBishop(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y) &&
-            isRevealingCheck(sf::Vector2i(tmpX*SPRITE_SIZE, tmpY*SPRITE_SIZE), x, y)) return true;
-    }
+    if (anyLegalMoveRook(x, y)) return true;
+    if (anyLegalMoveBishop(x, y)) return true;
     return false;
 }
 
