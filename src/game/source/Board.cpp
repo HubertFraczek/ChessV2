@@ -542,7 +542,30 @@ bool Board::anyLegalMoveQueen(int x, int y) {
 }
 
 bool Board::anyLegalMoveKing(int x, int y) {
-
+    if      (x < 7 && isLegalKing(sf::Vector2i((x+1)*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, y*SPRITE_SIZE), x, y))
+        return true;
+    else if (x < 7 && y > 0 && isLegalKing(sf::Vector2i((x+1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (x < 7 && y < 7 && isLegalKing(sf::Vector2i((x+1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x+1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (y > 0 && isLegalKing(sf::Vector2i(x*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (y < 7 && isLegalKing(sf::Vector2i(x*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i(x*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (x > 0 && isLegalKing(sf::Vector2i((x-1)*SPRITE_SIZE, y*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, y*SPRITE_SIZE), x, y))
+        return true;
+    else if (x > 0 && y > 0 && isLegalKing(sf::Vector2i((x-1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y-1)*SPRITE_SIZE), x, y))
+        return true;
+    else if (x > 0 && y < 7 && isLegalKing(sf::Vector2i((x-1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y) &&
+             isRevealingCheck(sf::Vector2i((x-1)*SPRITE_SIZE, (y+1)*SPRITE_SIZE), x, y))
+        return true;
     return false;
 }
 
