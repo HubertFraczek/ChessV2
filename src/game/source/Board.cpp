@@ -130,8 +130,13 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         printDebug();
                         std::pair<int, int> king = findKing(board[newY][newX]->getColor()*(-1));
                         if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second)) {
-                            std::cout << "isGameOver: " << isGameOver() << std::endl;
-                        }
+                            if (isGameOver()) {
+                                std::cout << "Checkmate! ";
+                                if (!whitesMove) std::cout << "White wins!" << std::endl;
+                                else std::cout << "Black wins!" << std::endl;
+                            }
+                        } else if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
+                            isGameOver()) std::cout << "Stalmate!" << std::endl;
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -247,49 +252,9 @@ bool Board::isLegalBishop(sf::Vector2i mousePos, int x, int y) {
     return false;
 }
 
-bool Board::isLegalQueen(sf::Vector2i mousePos, int x, int y){
-    int newX = (mousePos.x / SPRITE_SIZE);
-    int newY = (mousePos.y / SPRITE_SIZE);
-
-    if (newX == x && board[newY][newX]->getColor() != board[y][x]->getColor()) {
-        if (newY > y) {
-            for (int i = y + 1; i < newY; i++) {
-                if (board[i][newX]->getColor() != 0) return false;
-            }
-            return true;
-        } else {
-            for (int i = newY + 1; i < y; i++) {
-                if (board[i][newX]->getColor() != 0) return false;
-            }
-            return true;
-        }
-    } else if (newY == y && board[newY][newX]->getColor() != board[y][x]->getColor()) {
-        if (newX > x) {
-            for (int i = x + 1; i < newX; i++) {
-                if (board[newY][i]->getColor() != 0) return false;
-            }
-            return true;
-        } else {
-            for (int i = newX + 1; i < x; i++) {
-                if (board[newY][i]->getColor() != 0) return false;
-            }
-            return true;
-        }
-    } else if (board[newY][newX]->getColor() != board[y][x]->getColor()) {
-        int tmpY = y, tmpX = x;
-        while (true) {
-            if (newY > y) tmpY++;
-            else tmpY--;
-
-            if (newX > x) tmpX++;
-            else tmpX--;
-
-            if (tmpX == newX && tmpY == newY) break;
-
-            if (board[tmpY][tmpX]->getColor() != 0) return false;
-        }
-        return true;
-    }
+bool Board::isLegalQueen(sf::Vector2i mousePos, int x, int y) {
+    if (isLegalRook(mousePos, x, y)) return true;
+    if (isLegalBishop(mousePos, x, y)) return true;
     return false;
 }
 
