@@ -313,6 +313,10 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
     int newY = (mousePos.y / SPRITE_SIZE);
 
     if (newX >= 0 && newX <= 7 && newY >= 0 && newY <= 7) {
+
+        if (board[y][x]->getColor() == 1 && newY > y) return false;
+        if (board[y][x]->getColor() == -1 && newY < y) return false;
+
         if (board[y][x]->getColor() == -1) {
             if (newY == y + 1 && newX == x && board[newY][newX]->getColor() == 0) {
                 board[y][x]->setHasMovedBy2(false);
