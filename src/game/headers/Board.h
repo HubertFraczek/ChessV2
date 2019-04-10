@@ -15,6 +15,7 @@ private:
     Piece* board[8][8];
     Piece* freeSpace = new FreeSpace();
     int SPRITE_SIZE;
+    int moveNumber = 0;
     bool whitesMove;
     sf::Texture tWhitePawn;
     sf::Texture tBlackPawn;

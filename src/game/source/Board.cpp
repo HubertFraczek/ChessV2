@@ -121,6 +121,8 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                         turnOffHasMovedBy2(board[y][x]->getColor()*(-1));
                         swap(x, y, newX, newY);
                         whitesMove = !whitesMove;
+                        moveNumber++;
+                        std::cout << "Move number: " << moveNumber/2 << std::endl;
                         printDebug();
                         std::pair<int, int> king = findKing(board[newY][newX]->getColor()*(-1));
                         if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second)) {
@@ -129,8 +131,8 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                                 if (!whitesMove) std::cout << "White wins!" << std::endl;
                                 else std::cout << "Black wins!" << std::endl;
                             }
-                        } else if (!isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
-                            isGameOver()) std::cout << "Stalmate!" << std::endl;
+                        } else if (moveNumber > 9 && !isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
+                            isGameOver()) std::cout << "Stalemate!" << std::endl;
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -588,7 +590,7 @@ bool Board::isGameOver() {
         for (int x = 0; x < 8; x++) {
             if (board[y][x]->getColor() == color)
                 if (anyLegalMove(x, y)) {
-                    std::cout << "You can block with: " << board[y][x]->getId() << std::endl;
+//                    std::cout << "You can block with: " << board[y][x]->getId() << std::endl;
                     return false;
                 }
         }
