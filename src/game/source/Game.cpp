@@ -25,7 +25,7 @@ void Game::run() {
     tBoard.loadFromFile("../assets/board/board.png");
     Sprite sBoard(tBoard);
 
-    Board *board = new Board(SPRITE_SIZE);
+    Board *board = new Board(SPRITE_SIZE, WIDTH, HEIGHT);
     board->getElement(0,0)->getSprite();
 
     while (window.isOpen()) {
@@ -35,9 +35,11 @@ void Game::run() {
             if (event.type == Event::Closed) {
                 window.close();
             }
-            board->mouseEvents(&event, mouseButtonReleased, mousePos);
+            if (!board->isPromote())
+                board->mouseEvents(&event, mouseButtonReleased, mousePos);
         }
-        board->update(mousePos, mouseButtonReleased);
+        if (!board->isPromote())
+            board->update(mousePos, mouseButtonReleased);
 
         window.clear();
         window.draw(sBoard);
@@ -46,6 +48,21 @@ void Game::run() {
                 if (board->getElement(x, y)->getId() != 0)
                     window.draw(board->getElement(x, y)->getSprite());
             }
+        }
+        if (board->isPromote()) {
+            window.draw(board->getSPromotion());
+            if (!board->isWhitesMove()) {
+                window.draw(board->getSWhiteQueen());
+                window.draw(board->getSWhiteBishop());
+                window.draw(board->getSWhiteRook());
+                window.draw(board->getSWhiteKnight());
+            } else {
+                window.draw(board->getSBlackQueen());
+                window.draw(board->getSBlackKnight());
+                window.draw(board->getSBlackRook());
+                window.draw(board->getSBlackBishop());
+            }
+            board->promotion(&event, mousePos);
         }
         window.display();
     }

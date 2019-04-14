@@ -16,7 +16,7 @@
 
 using namespace sf;
 
-Board::Board(int SPRITE_SIZE) {
+Board::Board(int SPRITE_SIZE, int WIDTH, int HEIGHT) {
     this->SPRITE_SIZE = SPRITE_SIZE;
     this->whitesMove = true;
     this->tWhitePawn.loadFromFile("../assets/pieces/wP.png");
@@ -31,6 +31,25 @@ Board::Board(int SPRITE_SIZE) {
     this->tBlackQueen.loadFromFile("../assets/pieces/bQ.png");
     this->tWhiteKing.loadFromFile("../assets/pieces/wK.png");
     this->tBlackKing.loadFromFile("../assets/pieces/bK.png");
+    this->tPromotionScreen.loadFromFile("../assets/promotion.png");
+    this->sPromotion = new Sprite(tPromotionScreen);
+    this->sWhiteQueen = new Sprite(tWhiteQueen);
+    this->sWhiteRook = new Sprite(tWhiteRook);
+    this->sWhiteBishop = new Sprite(tWhiteBishop);
+    this->sWhiteKnight = new Sprite(tWhiteKnight);
+    this->sBlackQueen = new Sprite(tBlackQueen);
+    this->sBlackRook = new Sprite(tBlackRook);
+    this->sBlackBishop = new Sprite(tBlackBishop);
+    this->sBlackKnight = new Sprite(tBlackKnight);
+    sPromotion->setPosition(0, 800/2 - SPRITE_SIZE/2);
+    sWhiteQueen->setPosition(200, HEIGHT/2 - SPRITE_SIZE/2);
+    sBlackQueen->setPosition(200, HEIGHT/2 - SPRITE_SIZE/2);
+    sWhiteRook->setPosition(300, HEIGHT/2 - SPRITE_SIZE/2);
+    sBlackRook->setPosition(300, HEIGHT/2 - SPRITE_SIZE/2);
+    sWhiteBishop->setPosition(400, HEIGHT/2 - SPRITE_SIZE/2);
+    sBlackBishop->setPosition(400, HEIGHT/2 - SPRITE_SIZE/2);
+    sWhiteKnight->setPosition(500, HEIGHT/2 - SPRITE_SIZE/2);
+    sBlackKnight->setPosition(500, HEIGHT/2 - SPRITE_SIZE/2);
 
     for (int i = 0; i < 8; i++) {
         board[2][i] = freeSpace;
@@ -133,7 +152,16 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             }
                         } else if (moveNumber > 9 && !isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
                             isGameOver()) std::cout << "Stalemate!" << std::endl;
-                        if (pvp){
+
+                        if (pvp) {
+                            if (abs(board[newY][newX]->getId()) == 1 && newY == 0) {
+                                promote = true;
+                                toBePromotedX = newX;
+                                toBePromotedY = newY;
+                            }
+                        }
+
+                        if (pvp && !promote){
                             flipBoardVertically();
                             flipBoardHorizontally();
                         }
@@ -650,3 +678,143 @@ void Board::flipBoardHorizontally() {
         }
     }
 }
+
+void Board::promotion(sf::Event *event, sf::Vector2i mousePos) {
+    if (event->type == Event::MouseButtonPressed) {
+        if (event->key.code == Mouse::Left) {
+            bool done = false;
+            if (!whitesMove) {
+                if (sWhiteQueen->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tWhiteQueen), 5,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sWhiteKnight->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tWhiteKnight), 3,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sWhiteBishop->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tWhiteBishop), 4,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sWhiteRook->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tWhiteRook), 2,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+            } else {
+                if (sBlackQueen->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tBlackQueen), -5,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sBlackBishop->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tBlackBishop), -4,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sBlackKnight->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tBlackKnight), -3,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+                if (sBlackRook->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    done = true;
+                    delete board[toBePromotedY][toBePromotedX];
+                    board[toBePromotedY][toBePromotedX] = new Queen(
+                            new Sprite(tBlackRook), -2,
+                            toBePromotedX * SPRITE_SIZE,
+                            toBePromotedY * SPRITE_SIZE);
+                }
+            }
+            if (done) {
+                promote = false;
+                if (pvp && !promote){
+                    flipBoardVertically();
+                    flipBoardHorizontally();
+                }
+            }
+        }
+    }
+}
+
+bool Board::isPromote() {
+    return promote;
+}
+
+void Board::setPromote(bool promote) {
+    Board::promote = promote;
+}
+
+Sprite Board::getSPromotion() {
+    return *this->sPromotion;
+}
+
+void Board::setSPromotion(Sprite *sPromotion) {
+    Board::sPromotion = sPromotion;
+}
+
+bool Board::isWhitesMove() {
+    return whitesMove;
+}
+
+void Board::setWhitesMove(bool whitesMove) {
+    Board::whitesMove = whitesMove;
+}
+
+Sprite Board::getSWhiteQueen() {
+    return *this->sWhiteQueen;
+}
+
+Sprite Board::getSWhiteRook() {
+    return *this->sWhiteRook;
+}
+
+Sprite Board::getSWhiteBishop() {
+    return *this->sWhiteBishop;
+}
+
+Sprite Board::getSWhiteKnight() {
+    return *this->sWhiteKnight;
+}
+
+Sprite Board::getSBlackQueen() {
+    return *this->sBlackQueen;
+}
+
+Sprite Board::getSBlackRook() {
+    return *this->sBlackRook;
+}
+
+Sprite Board::getSBlackBishop() {
+    return *this->sBlackBishop;
+}
+
+Sprite Board::getSBlackKnight() {
+    return *this->sBlackKnight;
+}
+
+

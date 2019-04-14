@@ -16,8 +16,11 @@ private:
     Piece* freeSpace = new FreeSpace();
     int SPRITE_SIZE;
     int moveNumber = 0;
+    int toBePromotedX;
+    int toBePromotedY;
     bool whitesMove;
     bool pvp = true;
+    bool promote = false;
     sf::Texture tWhitePawn;
     sf::Texture tBlackPawn;
     sf::Texture tWhiteRook;
@@ -30,8 +33,18 @@ private:
     sf::Texture tBlackQueen;
     sf::Texture tWhiteKing;
     sf::Texture tBlackKing;
+    sf::Texture tPromotionScreen;
+    sf::Sprite *sPromotion;
+    sf::Sprite *sWhiteQueen;
+    sf::Sprite *sWhiteRook;
+    sf::Sprite *sWhiteBishop;
+    sf::Sprite *sWhiteKnight;
+    sf::Sprite *sBlackQueen;
+    sf::Sprite *sBlackRook;
+    sf::Sprite *sBlackBishop;
+    sf::Sprite *sBlackKnight;
 public:
-    Board(int SPRITE_SIZE);
+    Board(int SPRITE_SIZE, int WIDTH, int HEIGHT);
     ~Board();
     void mouseEvents(sf::Event *event, bool &mouseButtonReleased, sf::Vector2i mousePos);
     void update(sf::Vector2i mousePos, bool &mouseButtonReleased);
@@ -59,6 +72,21 @@ public:
     bool isGameOver();
     void flipBoardVertically();
     void flipBoardHorizontally();
+    void promotion(sf::Event *event, sf::Vector2i mousePos);
+    bool isPromote();
+    void setPromote(bool promote);
+    sf::Sprite getSPromotion();
+    void setSPromotion(sf::Sprite *sPromotion);
+    bool isWhitesMove();
+    void setWhitesMove(bool whitesMove);
+    sf::Sprite getSWhiteQueen();
+    sf::Sprite getSWhiteRook();
+    sf::Sprite getSWhiteBishop();
+    sf::Sprite getSWhiteKnight();
+    sf::Sprite getSBlackQueen();
+    sf::Sprite getSBlackRook();
+    sf::Sprite getSBlackBishop();
+    sf::Sprite getSBlackKnight();
 };
 
 
