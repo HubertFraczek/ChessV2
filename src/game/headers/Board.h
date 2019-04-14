@@ -17,6 +17,7 @@ private:
     int SPRITE_SIZE;
     int moveNumber = 0;
     bool whitesMove;
+    bool pvp = true;
     sf::Texture tWhitePawn;
     sf::Texture tBlackPawn;
     sf::Texture tWhiteRook;
@@ -56,6 +57,7 @@ public:
     bool anyLegalMoveKing(int x, int y);
     bool anyLegalMovePawn(int x, int y);
     bool isGameOver();
+    void revesreBoard();
 };
 
 
