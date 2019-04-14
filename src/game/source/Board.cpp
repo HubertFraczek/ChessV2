@@ -133,9 +133,11 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             }
                         } else if (moveNumber > 9 && !isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
                             isGameOver()) std::cout << "Stalemate!" << std::endl;
-                        revesreBoard();
+                        if (pvp){
+                            flipBoardVertically();
+                            flipBoardHorizontally();
+                        }
                         printDebug();
-//                        updateSprites();
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -370,16 +372,18 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             if (newY == y - 1 && newX == x && board[newY][newX]->getColor() == 0) {
                 board[y][x]->setHasMovedBy2(false);
                 return true; //move by 1
-            } else if (newY == y - 1 && ((newX == x + 1 && board[newY][newX]->getColor() == -1) ||
-                                         (newX == x - 1 && board[newY][newX]->getColor() == -1))) {
+            } else if (newY == y - 1 && ((newX == x + 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()) ||
+                                         (newX == x - 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()))) {
                 board[y][x]->setHasMovedBy2(false);
                 return true; //beating
             } else if (y == 6 && newY == y - 2 && x == newX && board[5][x]->getColor() == 0 &&
                        board[4][x]->getColor() == 0) {
-                if (board[newY][newX - 1]->getId() == 1 || board[newY][newX + 1]->getId() == 1)
+                if (board[newY][newX - 1]->getId() == -1*board[y][x]->getId() ||
+                    board[newY][newX + 1]->getId() == -1*board[y][x]->getId())
                     board[y][x]->setHasMovedBy2(true);
+                std::cout << "HAS MOVED " << x << " " << y << std::endl;
                 return true; //move by 2
-            } else if (board[newY + 1][newX]->getId() == -1 && board[newY + 1][newX]->isHasMovedBy2()
+            } else if (board[newY + 1][newX]->getId() == -1*board[y][x]->getId() && board[newY + 1][newX]->isHasMovedBy2()
                        && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
                 board[newY + 1][newX] = freeSpace;
                 return true;
@@ -623,7 +627,7 @@ bool Board::isGameOver() {
     return true;
 }
 
-void Board::revesreBoard() {
+void Board::flipBoardVertically() {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 8; x++) {
             if (board[y][x]->getColor() != 0)
@@ -631,6 +635,18 @@ void Board::revesreBoard() {
             if (board[7 - y][x]->getColor() != 0)
                 board[7 - y][x]->setSpritePos(x * SPRITE_SIZE, y * SPRITE_SIZE);
             swap(x, 7 - y, x, y);
+        }
+    }
+}
+
+void Board::flipBoardHorizontally() {
+    for (int y = 0; y < 8; y++) {
+        for (int x = 0; x < 4; x++) {
+            if (board[y][x]->getColor() != 0)
+                board[y][x]->setSpritePos((7 - x) * SPRITE_SIZE, y * SPRITE_SIZE);
+            if (board[y][7 - x]->getColor() != 0)
+                board[y][7 - x]->setSpritePos(x * SPRITE_SIZE, y * SPRITE_SIZE);
+            swap(7 - x, y, x, y);
         }
     }
 }

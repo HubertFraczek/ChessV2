@@ -57,7 +57,8 @@ public:
     bool anyLegalMoveKing(int x, int y);
     bool anyLegalMovePawn(int x, int y);
     bool isGameOver();
-    void revesreBoard();
+    void flipBoardVertically();
+    void flipBoardHorizontally();
 };
 
 
