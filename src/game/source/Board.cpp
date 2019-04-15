@@ -166,7 +166,6 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             flipBoardHorizontally();
                         }
                         printDebug();
-                        std::cout << whitesMove << "<-WHITESMOVE\n";
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -339,6 +338,61 @@ bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
                 swap(7, y, newX - 1, y);
                 return true;
             } else if (pvp) {
+                if (newY == y && abs(newX - x) == 2 && !board[y][x]->isHasMoved()) {
+                    int tmpX = x;
+                    while (true) {
+                        if (newX > x) {
+                            if (abs(7-newX) == 2) {
+                                if (tmpX == newX + 1) break;
+                            } else {
+                                if (tmpX == newX) break;
+                            }
+                            tmpX++;
+                        } else {
+                            if (abs(newX) == 2) {
+                                if (tmpX == newX - 1) break;
+                            } else {
+                                if (tmpX == newX) break;
+                            }
+                            tmpX--;
+                        }
+                        if (board[y][tmpX]->getColor() != 0) return false;
+                        if (isAttacked(board[y][x]->getColor(), tmpX, y)) return false;
+                    }
+                    if (newX > x) {
+                        if (abs(7-newX) == 2) {
+                            if (board[y][newX + 2]->isHasMoved()) return false;
+                            if (isAttacked(board[y][x]->getColor(), newX + 2, y)) return false;
+
+                            board[y][newX + 2]->setSpritePos((newX - 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+                            board[y][newX + 2]->setHasMoved(true);
+                            swap(newX + 2, y, newX - 1, y);
+                        } else {
+                            if (board[y][newX + 1]->isHasMoved()) return false;
+                            if (isAttacked(board[y][x]->getColor(), newX + 1, y)) return false;
+
+                            board[y][newX + 1]->setSpritePos((newX - 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+                            board[y][newX + 1]->setHasMoved(true);
+                            swap(newX + 1, y, newX - 1, y);
+                        }
+                        return true;
+                    } else {
+                        if (abs(newX) == 2) {
+                            if (board[y][newX - 2]->isHasMoved()) return false;
+                            if (isAttacked(board[y][x]->getColor(), newX - 2, y)) return false;
+                            board[y][newX - 2]->setSpritePos((newX + 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+                            board[y][newX - 2]->setHasMoved(true);
+                            swap(newX - 2, y, newX + 1, y);
+                        } else {
+                            if (board[y][newX - 1]->isHasMoved()) return false;
+                            if (isAttacked(board[y][x]->getColor(), newX - 1, y)) return false;
+                            board[y][newX - 1]->setSpritePos((newX + 1) * SPRITE_SIZE, y * SPRITE_SIZE);
+                            board[y][newX - 1]->setHasMoved(true);
+                            swap(newX - 1, y, newX + 1, y);
+                        }
+                        return true;
+                    }
+                }
 
             }
         }
@@ -350,7 +404,7 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
     int newX = (mousePos.x / SPRITE_SIZE);
     int newY = (mousePos.y / SPRITE_SIZE);
     if (newX >= 0 && newX <= 7 && newY >= 0 && newY <= 7) {
-        if (pvp && !whitesMove){
+        if (pvp && !whitesMove) {
             if (newY > y) return false;
 
             if (newY == y - 1 && newX == x && board[newY][newX]->getColor() == 0) {
