@@ -41,7 +41,7 @@ Board::Board(int SPRITE_SIZE, int WIDTH, int HEIGHT) {
     this->sBlackRook = new Sprite(tBlackRook);
     this->sBlackBishop = new Sprite(tBlackBishop);
     this->sBlackKnight = new Sprite(tBlackKnight);
-    sPromotion->setPosition(0, 800/2 - SPRITE_SIZE/2);
+    sPromotion->setPosition(0, HEIGHT/2 - SPRITE_SIZE/2);
     sWhiteQueen->setPosition(200, HEIGHT/2 - SPRITE_SIZE/2);
     sBlackQueen->setPosition(200, HEIGHT/2 - SPRITE_SIZE/2);
     sWhiteRook->setPosition(300, HEIGHT/2 - SPRITE_SIZE/2);
@@ -166,6 +166,7 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                             flipBoardHorizontally();
                         }
                         printDebug();
+                        std::cout << whitesMove << "<-WHITESMOVE\n";
                     } else {
                         board[y][x]->setSpritePos(x*SPRITE_SIZE, y*SPRITE_SIZE);
                         mouseButtonReleased = false;
@@ -314,7 +315,7 @@ bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
                 else if (newX < 7 && board[newY][newX + 1]->getId() == -1 * board[y][x]->getId()) return false;
                 else if (newX > 0 && board[newY][newX - 1]->getId() == -1 * board[y][x]->getId()) return false;
                 return true;
-            } else if (newY == y && newX == 2 && !board[y][x]->isHasMoved() && board[y][3]->getId() == 0 &&
+            } else if (!pvp && newY == y && newX == 2 && !board[y][x]->isHasMoved() && board[y][3]->getId() == 0 &&
                        board[y][2]->getId() == 0 &&
                        board[y][1]->getId() == 0 &&
                        board[y][0]->getId() == board[y][x]->getId() - board[y][x]->getColor() * 4 &&
@@ -327,7 +328,7 @@ bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
                 board[y][0]->setHasMoved(true);
                 swap(0, y, newX + 1, y);
                 return true;
-            } else if (newY == y && newX == 6 && !board[y][x]->isHasMoved() && board[y][5]->getId() == 0 &&
+            } else if (!pvp && newY == y && newX == 6 && !board[y][x]->isHasMoved() && board[y][5]->getId() == 0 &&
                        board[y][6]->getId() == 0 &&
                        board[y][7]->getId() == board[y][x]->getId() - board[y][x]->getColor() * 4 &&
                        !board[y][7]->isHasMoved() && !isAttacked(board[y][x]->getColor(), 7, y) &&
@@ -337,6 +338,8 @@ bool Board::isLegalKing(sf::Vector2i mousePos, int x, int y) {
                 board[y][7]->setHasMoved(true);
                 swap(7, y, newX - 1, y);
                 return true;
+            } else if (pvp) {
+
             }
         }
     }
@@ -347,7 +350,31 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
     int newX = (mousePos.x / SPRITE_SIZE);
     int newY = (mousePos.y / SPRITE_SIZE);
     if (newX >= 0 && newX <= 7 && newY >= 0 && newY <= 7) {
-        if (!pvp) {
+        if (pvp && !whitesMove){
+            if (newY > y) return false;
+
+            if (newY == y - 1 && newX == x && board[newY][newX]->getColor() == 0) {
+                board[y][x]->setHasMovedBy2(false);
+                return true; //move by 1
+            } else if (abs(newY-y) == 1 && ((newX == x + 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()) ||
+                                            (newX == x - 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()))) {
+                board[y][x]->setHasMovedBy2(false);
+                return true; //beating
+            } else if (y == 6 && newY == y - 2 && x == newX && board[5][x]->getColor() == 0 &&
+                       board[4][x]->getColor() == 0) {
+                if (board[newY][newX - 1]->getId() == -1*board[y][x]->getId() ||
+                    board[newY][newX + 1]->getId() == -1*board[y][x]->getId())
+                    board[y][x]->setHasMovedBy2(true);
+                std::cout << "HAS MOVED " << x << " " << y << std::endl;
+                return true; //move by 2
+            } else if (board[newY + 1][newX]->getId() == -1*board[y][x]->getId() && board[newY + 1][newX]->isHasMovedBy2()
+                       && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
+                board[newY + 1][newX] = freeSpace;
+                return true;
+            }
+                //TODO: reaching end line
+            else return false;
+        } else {
             if (board[y][x]->getColor() == 1 && newY > y) return false;
             if (board[y][x]->getColor() == -1 && newY < y) return false;
 
@@ -394,30 +421,6 @@ bool Board::isLegalPawn(sf::Vector2i mousePos, int x, int y) {
             } else {
                 return false;
             }
-        } else {
-            if (newY > y) return false;
-
-            if (newY == y - 1 && newX == x && board[newY][newX]->getColor() == 0) {
-                board[y][x]->setHasMovedBy2(false);
-                return true; //move by 1
-            } else if (newY == y - 1 && ((newX == x + 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()) ||
-                                         (newX == x - 1 && board[newY][newX]->getColor() == -1*board[y][x]->getColor()))) {
-                board[y][x]->setHasMovedBy2(false);
-                return true; //beating
-            } else if (y == 6 && newY == y - 2 && x == newX && board[5][x]->getColor() == 0 &&
-                       board[4][x]->getColor() == 0) {
-                if (board[newY][newX - 1]->getId() == -1*board[y][x]->getId() ||
-                    board[newY][newX + 1]->getId() == -1*board[y][x]->getId())
-                    board[y][x]->setHasMovedBy2(true);
-                std::cout << "HAS MOVED " << x << " " << y << std::endl;
-                return true; //move by 2
-            } else if (board[newY + 1][newX]->getId() == -1*board[y][x]->getId() && board[newY + 1][newX]->isHasMovedBy2()
-                       && y == newY + 1 && (x == newX + 1 || x == newX - 1)) {
-                board[newY + 1][newX] = freeSpace;
-                return true;
-            }
-                //TODO: reaching end line
-            else return false;
         }
     }
     return false;
@@ -816,5 +819,3 @@ Sprite Board::getSBlackBishop() {
 Sprite Board::getSBlackKnight() {
     return *this->sBlackKnight;
 }
-
-
