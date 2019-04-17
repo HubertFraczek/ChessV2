@@ -21,6 +21,8 @@ private:
     bool whitesMove;
     bool pvp = true;
     bool promote = false;
+    bool mate = false;
+    bool stalemate = false;
     sf::Texture tWhitePawn;
     sf::Texture tBlackPawn;
     sf::Texture tWhiteRook;
@@ -87,6 +89,12 @@ public:
     sf::Sprite getSBlackRook();
     sf::Sprite getSBlackBishop();
     sf::Sprite getSBlackKnight();
+    void actOnGameEnd(int newX, int newY, std::pair<int, int> king);
+    void makeMove(int newX, int newY, int x, int y, bool &mouseButtonReleased);
+    bool isMate();
+    void setMate(bool mate);
+    bool isStalemate();
+    void setStalemate(bool stalemate);
 };
 
 

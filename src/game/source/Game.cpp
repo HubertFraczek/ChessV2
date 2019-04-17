@@ -25,8 +25,20 @@ void Game::run() {
     tBoard.loadFromFile("../assets/board/board.png");
     Sprite sBoard(tBoard);
 
+    Font font;
+    font.loadFromFile("../assets/arial.ttf");
+    Text mateMsg;
+    Text stalemateMsg;
+    mateMsg.setFont(font);
+    stalemateMsg.setFont(font);
+    mateMsg.setFillColor(Color::White);
+    stalemateMsg.setFillColor(Color::White);
+    stalemateMsg.setString("Stalemate!");
+    stalemateMsg.setCharacterSize(50);
+    stalemateMsg.setPosition(WIDTH / 2 - stalemateMsg.getGlobalBounds().width / 2,
+            HEIGHT / 2 - stalemateMsg.getGlobalBounds().height / 2);
+
     Board *board = new Board(SPRITE_SIZE, WIDTH, HEIGHT);
-    board->getElement(0,0)->getSprite();
 
     while (window.isOpen()) {
         Event event;
@@ -63,6 +75,21 @@ void Game::run() {
                 window.draw(board->getSBlackBishop());
             }
             board->promotion(&event, mousePos);
+        }
+        if (board->isMate()) {
+            window.draw(board->getSPromotion());
+            if (!board->isWhitesMove()) {
+                mateMsg.setString("Checkmate, white wins!");
+            } else {
+                mateMsg.setString("Checkmate, black wins!");
+            }
+            mateMsg.setCharacterSize(50);
+            mateMsg.setPosition(WIDTH / 2 - mateMsg.getGlobalBounds().width / 2,
+                                HEIGHT / 2 - mateMsg.getGlobalBounds().height / 2);
+            window.draw(mateMsg);
+        } else if (board->isStalemate()) {
+            window.draw(board->getSPromotion());
+            window.draw(stalemateMsg);
         }
         window.display();
     }

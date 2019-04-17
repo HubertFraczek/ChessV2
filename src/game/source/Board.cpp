@@ -128,31 +128,9 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                 } else if (mouseButtonReleased && !board[y][x]->isIsMove() && board[y][x]->getIsBeingModified() &&
                         ((board[y][x]->getId() > 0 && whitesMove) || (board[y][x]->getId() < 0 && !whitesMove))) {
                     if (isLegal(mousePos, x, y) && isRevealingCheck(mousePos, x, y)) {
-                        if (board[newY][newX]->getId() != 0) {
-                            board[newY][newX] = freeSpace;
-                        }
-                        board[y][x]->setSpritePos(
-                                (newX) * SPRITE_SIZE,
-                                (newY) * SPRITE_SIZE);
-                        mouseButtonReleased = false;
-                        board[y][x]->setIsBeingModified(false);
-                        board[y][x]->setHasMoved(true);
-                        turnOffHasMovedBy2(board[y][x]->getColor()*(-1));
-                        swap(x, y, newX, newY);
-                        whitesMove = !whitesMove;
-                        moveNumber++;
-                        std::cout << "Move number: " << moveNumber/2 << std::endl;
-                        printDebug();
+                        makeMove(newX, newY, x, y, mouseButtonReleased);
                         std::pair<int, int> king = findKing(board[newY][newX]->getColor()*(-1));
-                        if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second)) {
-                            if (isGameOver()) {
-                                std::cout << "Checkmate! ";
-                                if (!whitesMove) std::cout << "White wins!" << std::endl;
-                                else std::cout << "Black wins!" << std::endl;
-                            }
-                        } else if (moveNumber > 9 && !isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
-                            isGameOver()) std::cout << "Stalemate!" << std::endl;
-
+                        actOnGameEnd(newX, newY, king);
                         if (pvp) {
                             if (abs(board[newY][newX]->getId()) == 1 && newY == 0) {
                                 promote = true;
@@ -160,8 +138,7 @@ void Board::update(sf::Vector2i mousePos, bool &mouseButtonReleased) {
                                 toBePromotedY = newY;
                             }
                         }
-
-                        if (pvp && !promote){
+                        if (pvp && !promote && !mate && !stalemate) {
                             flipBoardVertically();
                             flipBoardHorizontally();
                         }
@@ -872,4 +849,53 @@ Sprite Board::getSBlackBishop() {
 
 Sprite Board::getSBlackKnight() {
     return *this->sBlackKnight;
+}
+
+void Board::actOnGameEnd(int newX, int newY, std::pair<int, int> king) {
+    if (isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second)) {
+        if (isGameOver()) {
+            std::cout << "Checkmate! ";
+            if (!whitesMove) std::cout << "White wins!" << std::endl;
+            else std::cout << "Black wins!" << std::endl;
+            mate = true;
+        }
+    } else if (moveNumber > 9 && !isAttacked(board[newY][newX]->getColor()*(-1), king.first, king.second) &&
+               isGameOver()) {
+        std::cout << "Stalemate!" << std::endl;
+        stalemate = true;
+    }
+}
+
+void Board::makeMove(int newX, int newY, int x, int y, bool &mouseButtonReleased) {
+    if (board[newY][newX]->getId() != 0) {
+        board[newY][newX] = freeSpace;
+    }
+    board[y][x]->setSpritePos(
+            (newX) * SPRITE_SIZE,
+            (newY) * SPRITE_SIZE);
+    mouseButtonReleased = false;
+    board[y][x]->setIsBeingModified(false);
+    board[y][x]->setHasMoved(true);
+    turnOffHasMovedBy2(board[y][x]->getColor()*(-1));
+    swap(x, y, newX, newY);
+    whitesMove = !whitesMove;
+    moveNumber++;
+    std::cout << "Move number: " << moveNumber/2 << std::endl;
+    printDebug();
+}
+
+bool Board::isMate() {
+    return mate;
+}
+
+void Board::setMate(bool mate) {
+    Board::mate = mate;
+}
+
+bool Board::isStalemate() {
+    return stalemate;
+}
+
+void Board::setStalemate(bool stalemate) {
+    Board::stalemate = stalemate;
 }
